@@ -19,7 +19,7 @@ using namespace tk4cpp::constants;
 int main()
 {
 	tk4cpp::initialize();
-	auto tk = tk4cpp::Tk(NULLID);
+	auto tk = tk4cpp::Tk(NULL);
 	auto frame = tk4cpp::Frame(tk, "-relief", RIDGE, "-borderwidth", S(2));
 	frame.pack("-fill", BOTH, "-expand", S(1));
 	auto label = tk4cpp::Label(frame, "-text", "Hello, World");
@@ -38,56 +38,39 @@ int main()
 #include "tk4cpp.constants.hpp"
 #include "tk4cpp._tk4cpp.hpp"
 
-#define LAMBDA (std::vector<_tk4cpp::Obj> argv)->_tk4cpp::Obj
+#define LAMBDA (std::vector<_tk4cpp::Object>&argv)->_tk4cpp::Object
 
 namespace tk4cpp {
 
 	using sint = _tk4cpp::sint;
 	using uint = _tk4cpp::uint;
 	using TkApp = _tk4cpp::TkApp;
-	using Obj = _tk4cpp::Obj;
+	using Object = _tk4cpp::Object;
 	using Id = _tk4cpp::Id;
 	using _Func = _tk4cpp::_Func;
 	using Func = _tk4cpp::Func;
+
+	template <class... Us>
+	std::vector<Object> readargs(Us... a);
 
 	using RuntimeError = _tk4cpp::RuntimeError;
 
 	class Tk;
 	class Misc;
 
-	bool _support_default_root = true;
-	Misc* _default_root = NULL;
+	static bool _support_default_root = true;
+	static Misc* _default_root = NULL;
 
 	/* Inhibit setting of default root window.
 
 	Call this function to inhibit that the first instance of
 	Tk is used for windows without an explicit parent window.
 	*/
-	void NoDefaultRoot() {
-		_support_default_root = false;
-		_default_root = NULL;
-	}
+	void NoDefaultRoot();
 
 	Misc* _get_default_root(std::string what = "");
 
-	inline void __readargs(std::vector<Obj>& vs) {}
-	template <class A>
-	inline void __readargs(std::vector<Obj>& vs, A a) {
-		vs.push_back(a);
-	}
-	template <class A, class ... B>
-	inline void __readargs(std::vector<Obj>& vs, A a, B... b) {
-		vs.push_back(a);
-		__readargs(vs, b...);
-	}
-	template <class... Us>
-	inline std::vector<Obj> readargs(Us... a) {
-		std::vector<Obj> vs;
-		__readargs(vs, a...);
-		return vs;
-	}
-
-	uint _varnum = 0;
+	static uint _varnum = 0;
 
 	/* Internal class. Stores function to call when some user
     defined Tcl function is called e.g. after an event occurred. */
@@ -99,18 +82,10 @@ namespace tk4cpp {
 		Misc* widget;
 
 		// Store FUNC, SUBST and WIDGET as members.
-		CallWrapper(Func func, Func subst, Misc* widget) {
-			this->func = func;
-			this->subst = subst;
-			this->widget = widget;
-		}
+		CallWrapper(Func func, Func subst, Misc* widget);
 
 		// Apply first function SUBST to arguments, than FUNC.
-		Obj operator()(std::vector<_tk4cpp::Obj> args) {
-			if (this->subst) this->subst(args);
-			this->func(args);
-			return {};
-		}
+		Object operator()(std::vector<_tk4cpp::Object> args);
 
 	};
 
@@ -135,47 +110,22 @@ namespace tk4cpp {
         If NAME matches an existing variable and VALUE is omitted
         then the existing value is retained.
 		*/
-		template <class T>
-		Variable(Misc* master, T value = {}, std::string name = "");
+		Variable(Misc* master, Object value = {}, std::string name = "");
 
 		// Unset the variable in Tcl. 
-		~Variable() {
-			if (this->_tk == NULL) return;
-			if (this->_tk->getboolean(this->_tk->call({ "info", "exists", this->_name })))
-				this->_tk->globalunsetvar(this->_name);
-			if (this->_tclCommands.size() != 0) {
-				for (const auto& i : this->_tclCommands) {
-					this->_tk->deletecommand(i);
-				}
-				this->_tclCommands = {};
-			}
-		}
+		~Variable();
 
 		// Return the name of the variable in Tcl. 
-		operator std::string() { return this->_name; }
+		operator std::string();
 
 		// Set the variable to VALUE.
-		template <class T>
-		void set(T value) {
-			return this->_tk->globalsetvar(this->_name, value);
-		}
-		template <class T>
-		void initialize(T value) {
-			return this->_tk->globalsetvar(this->_name, value);
-		}
+		void set(Object value);
+		void initialize(Object value);
 
 		// Return value of variable.
-		Obj get() {
-			return this->_tk->globalgetvar(this->_name);
-		}
+		Object get();
 
-		std::string _register(Func callback) {
-			CallWrapper f(callback, {}, NULL);
-			std::string cbname = std::to_string((uint)callback.target<_Func>());
-			this->_tk->createcommand(cbname, f);
-			this->_tclCommands.push_back(cbname);	
-			return cbname;
-		}
+		std::string _register(Func callback);
 
 		/* Define a trace callback for the variable.
 
@@ -185,21 +135,18 @@ namespace tk4cpp {
         read, written or unset.
 
         Return the name of the callback. */
-		std::string trace_add(std::string mode, Func callback) {
-			std::string cbname = this->_register(callback);
-			this->_tk->call({ "trace","add","variable",
-				this->_name, mode, std::vector<Obj>{ cbname } });
-			return cbname;
-		}
+		std::string trace_add(std::string mode, Func callback);
 
 		/* Delete the trace callback for a variable.
 
         Mode is one of "read", "write", "unset" or a list or tuple of
         such strings.  Must be same as were specified in trace_add().
         cbname is the name of the callback returned from trace_add(). */
+		void trace_remove(std::string mode, std::string cbname);
 
+		// Return all trace callback information.
+		void trace_info();
 	};
-	std::string Variable::_default = "";
 
 	/* Internal class.
 	Base class which defines methods common for interior widgets. */
@@ -243,14 +190,14 @@ namespace tk4cpp {
 		A parameter of 1 means adhere to Motif (e.g. no color
 		change if mouse passes over slider). */
 		bool tk_strictMotif() {
-			return std::atoi(this->tk->call({ "set","tk_strictMotif" }).c_str());
+			return this->tk->boolean_fromobj(this->tk->call({ "set","tk_strictMotif" }));
 		}
 
 		/* Set Tcl internal variable, whether the look and feel
 		should adhere to Motif.
 		Returns the set value. */
-		bool tk_strictMotif(int boolean) {
-			return std::atoi(this->tk->call({ "set","tk_strictMotif",std::to_string(boolean)}).c_str());
+		bool tk_strictMotif(bool boolean) {
+			return this->tk->boolean_fromobj(this->tk->call({ "set","tk_strictMotif",std::to_string(boolean)}));
 		}
 
 		// Change the color scheme to light brown as used in Tk 3.6 and before.
@@ -269,9 +216,9 @@ namespace tk4cpp {
         disabledForeground, insertBackground, troughColor. */
 		template <class ... Us>
 		void tk_setPalette(Us... args) {
-			std::vector<Obj> v;
+			std::vector<Object> v;
 			v = { "tk_setPalette" };
-			std::vector<Obj> argv = readargs(args...);;
+			std::vector<Object> argv = readargs(args...);;
 			for (const auto& i : argv) v.push_back(i);
 			this->tk->call(v);
 		}
@@ -282,61 +229,42 @@ namespace tk4cpp {
 		void wait_variable(std::string name = "CPP_VAR") {
 			this->tk->call({ "tkwait","variable",name });
 		}
-		inline void waitvar(std::string name = "CPP_VAR") {
+		void waitvar(std::string name = "CPP_VAR") {
 			wait_variable(name);
 		}
 		// XXX b/w compat
 
 		// Wait until this is destroyed.
 		void wait_window() {
-			this->tk->call({ "tkwait","window",this->_w.to_string()});
+			this->tk->call({ "tkwait","window",std::string(this->_w) });
 		}
 		// Wait until a WIDGET is destroyed.
-		template <class T>
-		void wait_window(T window) {
-			this->tk->call({ "tkwait","window",window._w });
+		void wait_window(Misc* window) {
+			this->tk->call({ "tkwait","window",std::string(window->_w) });
 		}
 
 		/* Wait until the visibility of this changes
 		(e.g. this appears). */
 		void wait_visibility() {
-			this->tk->call({ "tkwait","window",this->_w.to_string() });
+			this->tk->call({ "tkwait","window",std::string(this->_w) });
 		}
 		/* Wait until the visibility of a WIDGET changes
 		(e.g. it appears). */
-		template <class T>
-		void wait_visibility(T window) {
-			this->tk->call({ "tkwait","window",window._w });
+		void wait_visibility(Misc* window) {
+			this->tk->call({ "tkwait","window",std::string(window->_w) });
 		}
 		
 		// Set Tcl variable NAME to VALUE.
-		template <class T>
-		void setvar(std::string name = "CPP_VAR", T value = "1") {
+		void setvar(std::string name = "CPP_VAR", Object value = "1") {
 			this->tk->setvar(name, value);
 		}
 		// Return value of Tcl variable NAME.
-		Obj getvar(std::string name = "CPP_VAR") {
+		Object getvar(std::string name = "CPP_VAR") {
 			return this->tk->getvar(name);
 		}
 		
 
 	};
-
-	template <class T>
-	Variable::Variable(Misc* master, T value, std::string name) {
-		if (master == NULL)
-			master = _get_default_root("create variable");
-		//this->_root = master->_root();
-		this->_tk = master->tk;
-		if (name != "")
-			this->_name = name;
-		else
-			this->_name = std::to_string(_varnum++);
-		if (value != NULL)
-			this->initialize(value);
-		else
-			this->initialize(Variable::_default);
-	}
 
 	class Tk : public Misc {
 	public:
@@ -344,9 +272,9 @@ namespace tk4cpp {
 		Tk(Misc* tk, Us... args) {
 			this->tk = tk->tk;
 			this->_w = this->tk->newid();
-			std::vector<Obj> v;
-			v = { "toplevel", this->_w.to_string() };
-			std::vector<Obj> argv = readargs(args...);
+			std::vector<Object> v;
+			v = { "toplevel", std::string(this->_w) };
+			std::vector<Object> argv = readargs(args...);
 			for (const auto& i : argv) v.push_back(i);
 			this->tk->call(v);
 		}
@@ -358,27 +286,13 @@ namespace tk4cpp {
 		Toplevel(Misc* tk, Us... args) {
 			this->tk = tk->tk;
 			this->_w = this->tk->newid();
-			std::vector<Obj> v;
-			v = { "toplevel", this->_w.to_string() };
-			std::vector<Obj> argv = readargs(args...);
+			std::vector<Object> v;
+			v = { "toplevel", std::string(this->_w) };
+			std::vector<Object> argv = readargs(args...);
 			for (const auto& i : argv) v.push_back(i);
 			this->tk->call(v);
 		}
 	};
-
-	inline Misc* _get_default_root(std::string what) {
-		if (!_support_default_root) {
-			throw RuntimeError("No master specified and tk4cpp is "
-				"configured to not support default root");
-		}
-		if (_default_root == NULL) {
-			if (what != "")
-				throw RuntimeError("Too early to "+what+": no default root window");
-			Misc* root = new Tk(NULL);
-			assert(_default_root != NULL);
-		}
-		return _default_root;
-	}
 
 }
 

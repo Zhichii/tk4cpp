@@ -759,7 +759,7 @@ typedef void (Tcl_IdleProc) (ClientData clientData);
 typedef void (Tcl_InterpDeleteProc) (ClientData clientData,
 	Tcl_Interp *interp);
 typedef int (Tcl_MathProc) (ClientData clientData, Tcl_Interp *interp,
-	Tcl_Value *argv, Tcl_Value *resultPtr);
+	Tcl_Value *args, Tcl_Value *resultPtr);
 typedef void (Tcl_NamespaceDeleteProc) (ClientData clientData);
 typedef int (Tcl_ObjCmdProc) (ClientData clientData, Tcl_Interp *interp,
 	int objc, struct Tcl_Obj *const *objv);

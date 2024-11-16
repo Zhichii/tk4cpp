@@ -5,6 +5,7 @@
 
 tk4cpp/
 *.zip
+desktop.ini
 
 # User-specific files
 *.rsuser
