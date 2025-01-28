@@ -5,16 +5,24 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="ReleaseDll|Win32">
+      <Configuration>ReleaseDll</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseDll|x64">
+      <Configuration>ReleaseDll</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseLib|Win32">
+      <Configuration>ReleaseLib</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="ReleaseLib|x64">
+      <Configuration>ReleaseLib</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -32,8 +40,15 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -45,8 +60,15 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -60,33 +82,45 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);tkinclude;include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);tkinclude;include</IncludePath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);tkinclude;include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);tkinclude;include</IncludePath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TCL_THREADS=1;USE_THREAD_ALLOC=1;STATIC_BUILD;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
@@ -94,19 +128,19 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;libs\itcl430ts.lib;libs\itclstub430.lib;libs\sqlite3453ts.lib;libs\tcl86ts.lib;libs\tcldde14s.lib;libs\tclreg13s.lib;libs\tclstub86.lib;libs\tdbc119ts.lib;libs\tdbcmysql119ts.lib;libs\tdbcodbc119ts.lib;libs\tdbcpostgres119ts.lib;libs\tdbcstub119.lib;libs\thread2810ts.lib;libs\tk86ts.lib;libs\tkstub86.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TCL_THREADS=1;USE_THREAD_ALLOC=1;STATIC_BUILD;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
@@ -116,7 +150,28 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;libs\itcl430ts.lib;libs\itclstub430.lib;libs\sqlite3453ts.lib;libs\tcl86ts.lib;libs\tcldde14s.lib;libs\tclreg13s.lib;libs\tclstub86.lib;libs\tdbc119ts.lib;libs\tdbcmysql119ts.lib;libs\tdbcodbc119ts.lib;libs\tdbcpostgres119ts.lib;libs\tdbcstub119.lib;libs\thread2810ts.lib;libs\tk86ts.lib;libs\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkStatus>
+      </LinkStatus>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>TCL_THREADS=1;USE_THREAD_ALLOC=1;STATIC_BUILD;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
     </Link>
@@ -125,7 +180,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TCL_THREADS=1;USE_THREAD_ALLOC=1;STATIC_BUILD;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
@@ -133,19 +188,19 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;libs\itcl430ts.lib;libs\itclstub430.lib;libs\sqlite3453ts.lib;libs\tcl86ts.lib;libs\tcldde14s.lib;libs\tclreg13s.lib;libs\tclstub86.lib;libs\tdbc119ts.lib;libs\tdbcmysql119ts.lib;libs\tdbcodbc119ts.lib;libs\tdbcpostgres119ts.lib;libs\tdbcstub119.lib;libs\thread2810ts.lib;libs\tk86ts.lib;libs\tkstub86.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TCL_THREADS=1;USE_THREAD_ALLOC=1;STATIC_BUILD;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
@@ -155,23 +210,48 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;libs\itcl430ts.lib;libs\itclstub430.lib;libs\sqlite3453ts.lib;libs\tcl86ts.lib;libs\tcldde14s.lib;libs\tclreg13s.lib;libs\tclstub86.lib;libs\tdbc119ts.lib;libs\tdbcmysql119ts.lib;libs\tdbcodbc119ts.lib;libs\tdbcpostgres119ts.lib;libs\tdbcstub119.lib;libs\thread2810ts.lib;libs\tk86ts.lib;libs\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkStatus>
+      </LinkStatus>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>TCL_THREADS=1;USE_THREAD_ALLOC=1;STATIC_BUILD;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="tk4cpp._tk4cpp.hpp" />
-    <ClInclude Include="tk4cpp.hpp" />
-    <ClInclude Include="tk4cpp.constants.hpp" />
+    <ResourceCompile Include="rc\tk_base.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="tk4cpp.cpp" />
-    <ClCompile Include="tk4cpp._tk4cpp.cpp" />
+    <None Include="README.md" />
+    <None Include="README.SC.md" />
+    <None Include="README.TC.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\internal\Basic.cpp" />
+    <ClCompile Include="src\internal\Object.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="rc\tk_base.rc" />
+    <ClInclude Include="headers\internal\Basic.hpp" />
+    <ClInclude Include="headers\internal\Object.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
