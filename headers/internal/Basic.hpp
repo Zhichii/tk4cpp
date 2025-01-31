@@ -1,15 +1,9 @@
-/* Interface to Tcl/Tk. Thanks to Python! */
+/* Some basic definitions. */
 
 #ifndef TK4CPP_INTERNAL_BASIC
 #define TK4CPP_INTERNAL_BASIC
 
 #include <limits>
-
-#define MIN(x, y) (((x) > (y)) ? (y) : (x))
-
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
-
-#define ABS(x) ((x) < 0 ? -(x) : (x))
 
 // I don't know the usage of this.
 #define USE_TCL_UNICODE 1
@@ -54,6 +48,14 @@ typedef int Tcl_Size;
 #include <stdexcept>
 #include <malloc.h>
 
+#define MIN(x, y) (((x) > (y)) ? (y) : (x))
+
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+
+#define ABS(x) ((x) < 0 ? -(x) : (x))
+
+#define THROW_ERROR(EXC, MSG) { printf("%s[%s]", std::string(EXC).c_str(), std::string(MSG).c_str()); throw std::exception(); }
+
 namespace tk4cpp {
 
     typedef int sint;
@@ -61,10 +63,6 @@ namespace tk4cpp {
     typedef long long slll;
     typedef unsigned long long ulll;
 
-    void throw_error(std::string exception, std::string msg);
-    
-    void tcl_error();
-    
     struct TkApp;
 
 }

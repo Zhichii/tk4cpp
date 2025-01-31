@@ -20,9 +20,9 @@ call "%VSTOOLS%..\..\VC\vcvarsall.bat" %_ARGS%
 :compile
 set _TCL_SOURCE=H:\Libraries\tcl-sources
 set _TK_SOURCE=H:\Libraries\tcl-sources\tk-sources
+set _INSTALL_DIR=H:\Libraries\Tcl
 set _OPTIONS=msvcrt,static,pdbs,symbols
 set _PATH=%cd%
-set _INSTALL_DIR=H:\Libraries\Tcl
 
 pause 
 cls
@@ -34,4 +34,10 @@ cls
 cd /d %_TK_SOURCE%\win
 nmake -f makefile.vc all OPTS=%_OPTIONS% TCLDIR=%_TCL_SOURCE%
 nmake -f makefile.vc install OPTS=%_OPTIONS% TCLDIR=%_TCL_SOURCE% INSTALLDIR=%_INSTALL_DIR%
+pause
+
+rd include
+rd lib
+mklink /D include %_INSTALL_DIR%\include
+mklink /D lib %_INSTALL_DIR%\lib
 pause

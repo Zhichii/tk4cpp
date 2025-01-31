@@ -99,22 +99,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -128,7 +128,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;lib\tcl86tsgx.lib;lib\tcldde14sgx.lib;lib\tclreg13sgx.lib;lib\tclstub86.lib;lib\tk86tsgx.lib;lib\tkstub86.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -150,7 +150,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;lib\tcl86tsgx.lib;lib\tcldde14sgx.lib;lib\tclreg13sgx.lib;lib\tclstub86.lib;lib\tk86tsgx.lib;lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
     </Link>
@@ -171,7 +171,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;lib\tcl86tsgx.lib;lib\tcldde14sgx.lib;lib\tclreg13sgx.lib;lib\tclstub86.lib;lib\tk86tsgx.lib;lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
     </Link>
@@ -188,7 +188,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;lib\tcl86tsgx.lib;lib\tcldde14sgx.lib;lib\tclreg13sgx.lib;lib\tclstub86.lib;lib\tk86tsgx.lib;lib\tkstub86.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -210,7 +210,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;lib\tcl86tsgx.lib;lib\tcldde14sgx.lib;lib\tclreg13sgx.lib;lib\tclstub86.lib;lib\tk86tsgx.lib;lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
     </Link>
@@ -231,7 +231,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;H:\Libraries\Tcl\lib\tcl86tsgx.lib;H:\Libraries\Tcl\lib\tcldde14sgx.lib;H:\Libraries\Tcl\lib\tclreg13sgx.lib;H:\Libraries\Tcl\lib\tclstub86.lib;H:\Libraries\Tcl\lib\tk86tsgx.lib;H:\Libraries\Tcl\lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Netapi32.lib;dwmapi.lib;crypt32.lib;wldap32.lib;normaliz.lib;lib\tcl86tsgx.lib;lib\tcldde14sgx.lib;lib\tclreg13sgx.lib;lib\tclstub86.lib;lib\tk86tsgx.lib;lib\tkstub86.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>
       </LinkStatus>
     </Link>

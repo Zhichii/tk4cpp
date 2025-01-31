@@ -1,4 +1,4 @@
-/* Interface to evaluate Tcl/Tk commands. Thanks to Python! */
+/* Evaluating Tcl/Tk commands. */
 
 #ifndef TK4CPP_INTERNAL_EVAL
 #define TK4CPP_INTERNAL_EVAL

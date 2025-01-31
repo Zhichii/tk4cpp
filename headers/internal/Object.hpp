@@ -1,4 +1,4 @@
-/* The object for multi-type values. */
+/* The wrapper of Tcl objects. */
 
 #ifndef TK4CPP_INTERNAL_OBJECT
 #define TK4CPP_INTERNAL_OBJECT
@@ -11,9 +11,9 @@
 namespace tk4cpp {
 
     // Increase reference count when object isn't NULL. 
-    void safe_incr_ref(Tcl_Obj* object);
+    void safe_incr_refcnt(Tcl_Obj* object);
     // Decrease reference count when object isn't NULL. 
-    void safe_decr_ref(Tcl_Obj* object);
+    void safe_decr_refcnt(Tcl_Obj* object);
     
     struct Object;
     typedef Object _Func(std::vector<Object>&);

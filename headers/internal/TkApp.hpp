@@ -1,4 +1,4 @@
-/*  */
+/* The wrapper of Tcl_Interp* and some other things. */
 
 #ifndef TK4CPP_INTERNAL_TKAPP
 #define TK4CPP_INTERNAL_TKAPP
@@ -6,6 +6,8 @@
 #include "Basic.hpp"
 #include "Object.hpp"
 #include "Eval.hpp"
+
+#define THROW_TCL_ERROR(PTKAPP) THROW_ERROR("TclError", Tcl_GetStringResult(PTKAPP->interp))
 
 namespace tk4cpp {
 
@@ -28,7 +30,6 @@ namespace tk4cpp {
 		const Tcl_ObjType* proc_body_type;
 		const Tcl_ObjType* string_type;
 		const Tcl_ObjType* utf32_string_type;
-		void tcl_error();
 
 		std::wstring unicode_fromobj(Object object);
 		std::string string_fromobj(Object object);
@@ -67,7 +68,7 @@ namespace tk4cpp {
 			Object res;
 			int exc = 0;
 			CallEvent* ev = (CallEvent*)attemptckalloc(sizeof(CallEvent));
-			if (ev == nullptr) throw_error("MemoryError", "no memory");
+			if (ev == nullptr) THROW_ERROR("MemoryError", "no memory");
 			memset(ev, 0, sizeof(CallEvent));
 			ev->ev.proc = (Tcl_EventProc*)cb_call_proc;
 			ev->app = this;
@@ -89,8 +90,8 @@ namespace tk4cpp {
 #ifdef _DEBUG
 			if (res) printf("%s\n", std::string(res).c_str());
 #endif
-			if (res) Tcl_IncrRefCount(res.object);
-			if (exc) this->tcl_error();
+			if (res) safe_incr_refcnt(res.object);
+			if (exc) THROW_TCL_ERROR(this);
 			return res;
 		}
 

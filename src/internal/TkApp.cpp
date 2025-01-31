@@ -2,11 +2,6 @@
 
 namespace tk4cpp {
 
-	void TkApp::tcl_error() {
-		std::string msg = Tcl_GetStringResult(this->interp);
-		throw_error("TclError", msg);
-	}
-
 	void thread_send(TkApp* app, Tcl_Event* ev, Tcl_Condition* cond, Tcl_Mutex* mutex) {
 		Tcl_MutexLock(mutex);
 		Tcl_ThreadQueueEvent(app->thread_id, ev, TCL_QUEUE_TAIL);
@@ -33,12 +28,12 @@ namespace tk4cpp {
 			value = Tcl_NewStringObj("true", -1);
 			Tcl_GetBooleanFromObj(NULL, value, &boolValue);
 			this->boolean_type = value->typePtr;
-			safe_decr_ref(value);
+			safe_decr_refcnt(value);
 
 			// "bytearray" type is not registered in Tcl 9.0
 			value = Tcl_NewByteArrayObj(NULL, 0);
 			this->byte_array_type = value->typePtr;
-			safe_decr_ref(value);
+			safe_decr_refcnt(value);
 
 			/* TIP 484 suggests retrieving the "int" type without Tcl_GetObjType("int")
 				since it is no longer registered in Tcl 9.0. But even though Tcl 8.7
@@ -46,7 +41,7 @@ namespace tk4cpp {
 				a registered "int" type, which FromObj() should recognize just in case. */
 			value = Tcl_NewIntObj(0);
 			this->int_type = value->typePtr;
-			safe_decr_ref(value);
+			safe_decr_refcnt(value);
 		}
 		this->double_type = Tcl_GetObjType("double");
 		this->wide_int_type = Tcl_GetObjType("wideInt");
