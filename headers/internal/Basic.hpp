@@ -11,18 +11,7 @@
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
-#define CHECK_SIZE(size, elemsize) \
-    ((uint)(size) <= Py_MIN((uint)INT_MAX, UINT_MAX / (uint)(elemsize)))
-#if SIZE_MAX > INT_MAX
-#define CHECK_STRING_LENGTH(s) do {                                     \
-        if (s.size() >= INT_MAX) {                                      \
-            throw OverflowError("string is too long");                  \
-        } } while(0)
-#else
-#define CHECK_STRING_LENGTH(s)
-#endif
-
-// I don't know the actuall use of this macro.
+// I don't know the usage of this.
 #define USE_TCL_UNICODE 1
 
 #include <tcl.h>
@@ -72,7 +61,9 @@ namespace tk4cpp {
     typedef long long slll;
     typedef unsigned long long ulll;
 
-    void throw_exception(std::string exception, std::string msg);
+    void throw_error(std::string exception, std::string msg);
+    
+    void tcl_error();
     
     struct TkApp;
 

@@ -5,6 +5,9 @@
 
 #include "Basic.hpp"
 
+// Ignore the error of "..." here if it does. 
+#define _EXPAND_ARGS(args) (std::vector<Object>{ Object(args)... })
+
 namespace tk4cpp {
 
     // Increase reference count when object isn't NULL. 
@@ -43,8 +46,10 @@ namespace tk4cpp {
         friend std::ostream& operator<<(std::ostream& os, Object& obj);
     };
 
+    Object copy_object(const Object& o);
+
     template <class... Ts>
-    std::vector<Object> _expand_args(Ts... arguments) {
+    std::vector<Object> make_list(Ts... arguments) {
         std::vector<Object> ret = { Object(arguments)... };
         // Ignore the error of "..." here if it does. 
         return ret;

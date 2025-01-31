@@ -99,22 +99,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include;H:\Libraries\tcl-sources\win</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);headers;H:\Libraries\Tcl\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -246,12 +246,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\internal\Basic.cpp" />
+    <ClCompile Include="src\internal\Eval.cpp" />
     <ClCompile Include="src\internal\Object.cpp" />
+    <ClCompile Include="src\internal\TkApp.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\internal\Basic.hpp" />
+    <ClInclude Include="headers\internal\Eval.hpp" />
     <ClInclude Include="headers\internal\Object.hpp" />
+    <ClInclude Include="headers\internal\TkApp.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

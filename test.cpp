@@ -1,22 +1,19 @@
 
 #include <internal/Basic.hpp>
 #include <internal/Object.hpp>
-
-namespace {
-	int n;
-}
+#include <internal/TkApp.hpp>
 
 int main() {
-	n = 5;
-	Tcl_Interp* interp = Tcl_CreateInterp();
-	Tcl_Init(interp);
-	Tk_Init(interp);
+	tk4cpp::TkApp app;
 	{
 		tk4cpp::Object m = 1.145;
-		tk4cpp::Object n = tk4cpp::_expand_args("puts", 1.145);
+		tk4cpp::Object n = tk4cpp::make_list("puts", 1.145);
 		std::cout << m << "\n" << n << "\n";
-		//Tcl_EvalObjEx(interp, n.object, 0);
+		app.eval("ttk::label", ".x", "-text", "999");
+		app.eval("pack", ".x");
+		//Tcl_EvalObjEx(app.interp, tk4cpp::Object(tk4cpp::make_list("ttk::label", ".x", "-text", "999")).object, 0);
+		//Tcl_EvalObjEx(app.interp, tk4cpp::Object(tk4cpp::make_list("pack", ".x")).object, 0);
+		Tk_MainLoop();
 	}
-	Tcl_Finalize();
 	return 0;
 }

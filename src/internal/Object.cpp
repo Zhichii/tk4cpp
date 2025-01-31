@@ -30,12 +30,12 @@ namespace tk4cpp {
 	}
 	bool Object::operator==(Object n) {
 		if (this->not_func) return this->object == n.object;
-		throw_exception("UnreachableError", "You shouldn't do this. ");
+		throw_error("UnreachableError", "You shouldn't do this. ");
 		return false;
 	}
 	bool Object::operator!=(Object n) {
 		if (this->not_func) return this->object != n.object;
-		throw_exception("UnreachableError", "You shouldn't do this. ");
+		throw_error("UnreachableError", "You shouldn't do this. ");
 		return false;
 	}
 	Object::Object(bool n) {
@@ -137,6 +137,10 @@ namespace tk4cpp {
 	std::ostream& operator<<(std::ostream& os, Object& obj) {
 		os << std::string(obj);
 		return os;
+	}
+
+	Object copy_object(const Object& o) {
+		return Object(Tcl_DuplicateObj(o.object));
 	}
 
 }
