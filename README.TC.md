@@ -22,6 +22,8 @@
 
 3. 修改檔案 `tcl_compile.bat` 的第 21 到 23 行。
 
-4. 運行這個 `.bat` 檔案。如果你不信任我, 可以檢查檔案内容。
+4. 如果你想改 Tcl/Tk 的配置，建議你直接問我，因為講明白有點難。
 
-5. 啟動 Visual Studio（建议使用 Visual Studio 2022）。然後開啟專案（`tk4cpp.sln`）。開始你的構建！
+5. 運行這個 `.bat` 檔案。如果你不信任我, 可以檢查檔案内容。
+
+6. 啟動 Visual Studio（建议使用 Visual Studio 2022）。然後開啟專案（`tk4cpp.sln`）。開始你的構建！

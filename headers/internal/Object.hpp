@@ -8,24 +8,34 @@
 // Ignore the error of "..." here if it does. 
 #define _EXPAND_ARGS(args) (std::vector<Object>{ Object(args)... })
 
-namespace tk4cpp {
+namespace tki {
 
     // Increase reference count when object isn't NULL. 
     void safe_incr_refcnt(Tcl_Obj* object);
     // Decrease reference count when object isn't NULL. 
     void safe_decr_refcnt(Tcl_Obj* object);
     
+    template <class T>
+    class _FuncWrap : std::function<T> {
+    public:
+        const void* force_get() {
+            return this->_Target(this->target_type());
+        }
+    };
+
     struct Object;
-    typedef Object _Func(std::vector<Object>&);
+    typedef Object _Func(int&,std::vector<Object>&);
     typedef std::function<_Func> Func;
+    typedef _FuncWrap<_Func> FuncWrapper;
     struct Object {
         Tcl_Obj* object = NULL;
-        bool not_func = true;
+        bool no_func = true;
         Func function;
         operator bool();
         ~Object();
         Object();
         Object(const Object& n);
+        Object& operator=(const Object& n);
         // Will increase reference count. 
         Object(Tcl_Obj* n);
         bool operator==(Object n);
@@ -42,7 +52,7 @@ namespace tk4cpp {
         Object(std::wstring n);
         Object(std::vector<Object> obj);
         Object(Func function);
-        operator std::string();
+        std::string str();
         friend std::ostream& operator<<(std::ostream& os, Object& obj);
     };
 

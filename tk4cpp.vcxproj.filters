@@ -28,13 +28,7 @@
     <ClCompile Include="test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\internal\Basic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\internal\Object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\internal\Eval.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\internal\TkApp.cpp">
@@ -46,9 +40,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\internal\Object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="headers\internal\Eval.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\internal\TkApp.hpp">

@@ -1,4 +1,4 @@
-# Language
+# Languages
 
 [English](README.md) [简体中文](README.SC.md) [繁體中文](README.TC.md)
 
@@ -22,6 +22,8 @@ Currently MSVC only, exploring porting to MinGW and other platforms.
 
 3. Modify Line 21 ~ 23 in the file `tcl_compile.bat`.
 
-4. Run the `.bat` file. If you don't trust me, then check the content.
+4. If you want to change configurations of Tcl/Tk, I suggest that you should contact with me. Because it's hard to say it clearly.
 
-5. Launch Visual Studio. I preferred Visual Studio 2022. Then open the project (`tk4cpp.sln`). Start your build!
+5. Run the `.bat` file. If you don't trust me, then check the content.
+
+6. Launch Visual Studio. I preferred Visual Studio 2022. Then open the project (`tk4cpp.sln`). Start your build!

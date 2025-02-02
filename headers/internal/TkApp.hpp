@@ -5,13 +5,48 @@
 
 #include "Basic.hpp"
 #include "Object.hpp"
-#include "Eval.hpp"
 
-#define THROW_TCL_ERROR(PTKAPP) THROW_ERROR("TclError", Tcl_GetStringResult(PTKAPP->interp))
+#ifndef TKI_TCL_ERROR
+// Will crash if there's an Tcl error.
+#define THROW_TCL_ERROR(PTKAPP) { printf("%s[%s]", "TclError", Tcl_GetStringResult(PTKAPP->interp)); throw std::exception(); }
+#else
+// Won't crash.
+#define THROW_TCL_ERROR(PTKAPP) { printf("%s[%s]", "TclError", Tcl_GetStringResult(PTKAPP->interp)); }
+#endif
 
-namespace tk4cpp {
+namespace tki {
+
+	struct Event : Tcl_Event {
+		Tcl_Condition* done;
+		TkApp* app;
+	};
 
 	void thread_send(TkApp* app, Tcl_Event* ev, Tcl_Condition* cond, Tcl_Mutex* mutex);
+
+	void thread_send_if(TkApp* app, Tcl_Event* ev_, Tcl_Mutex* mutex);
+
+	struct CallEvent : Event {
+		std::vector<Object>* argv;
+		Object* ret;
+		int* err;
+		int flags;
+	};
+	int call_proc(CallEvent* ev, int flags);
+
+	struct CmdClientData {
+		TkApp* app;
+		Func function;
+	};
+	int command_wrapper(ClientData clientData, Tcl_Interp* interp, int objc, Tcl_Obj* const objv[]);
+	
+	struct CommandEvent : Event {
+		std::string* name;
+		ClientData data;
+		int* err;
+		int create;
+	};
+	void command_delete(ClientData clientData);
+	int command_proc(CommandEvent* ev, int flags);
 
 	struct TkApp {
 
@@ -50,50 +85,7 @@ namespace tk4cpp {
 			  /* Not sure: Allocation of Tcl objects needs to occur in the
 				 interpreter thread. We ship the args to the target thread,
 				 and perform processing there. */
-		template <class... Ts>
-		Object eval(Ts... argx) {
-			std::vector<Object> argv = { (argx)... };
-			for (const auto& i : argv) {
-				if (i.not_func) continue;
-				//this->createcommand(i.str, i.function);
-			}
-			ulll argc = argv.size();
-#ifdef _DEBUG
-			printf("> ");
-			for (ulll i = 0; i < argc; i++) {
-				printf("%s ", std::string(argv[i]).c_str());
-			}
-			printf("\n");
-#endif
-			Object res;
-			int exc = 0;
-			CallEvent* ev = (CallEvent*)attemptckalloc(sizeof(CallEvent));
-			if (ev == nullptr) THROW_ERROR("MemoryError", "no memory");
-			memset(ev, 0, sizeof(CallEvent));
-			ev->ev.proc = (Tcl_EventProc*)cb_call_proc;
-			ev->app = this;
-			ev->argv = &argv;
-			ev->flags = TCL_EVAL_DIRECT | TCL_EVAL_GLOBAL;
-			ev->res = &res;
-			ev->exc = &exc;
-			ev->done = NULL;
-			if (Tcl_GetCurrentThread() != this->thread_id) {
-				Tcl_Condition cond = NULL;
-				ev->done = &cond;
-				thread_send(this, (Tcl_Event*)ev, &cond, &this->call_mutex);
-				Tcl_ConditionFinalize(&cond);
-			}
-			else {
-				cb_call_proc(ev, 0);
-				ckfree(ev);
-			}
-#ifdef _DEBUG
-			if (res) printf("%s\n", std::string(res).c_str());
-#endif
-			if (res) safe_incr_refcnt(res.object);
-			if (exc) THROW_TCL_ERROR(this);
-			return res;
-		}
+		Object eval(std::vector<Object> argv);
 
 		/* This mutex synchronizes inter-thread command creation/deletion. */
 		Tcl_Mutex command_mutex;
