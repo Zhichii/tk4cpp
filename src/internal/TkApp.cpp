@@ -1,21 +1,17 @@
 #include <internal/TkApp.hpp>
 
 namespace tki {
-
-	void thread_send(TkApp* app, Tcl_Event* ev, Tcl_Condition* cond, Tcl_Mutex* mutex) {
-		Tcl_MutexLock(mutex);
-		Tcl_ThreadQueueEvent(app->thread_id, ev, TCL_QUEUE_TAIL);
-		Tcl_ThreadAlert(app->thread_id);
-		Tcl_ConditionWait(cond, mutex, nullptr);
-		Tcl_MutexUnlock(mutex);
-	}
 	
 	void thread_send_if(TkApp* app, Tcl_Event* ev_, Tcl_Mutex* mutex) {
 		Event* ev = (Event*)ev_;
 		if (Tcl_GetCurrentThread() != app->thread_id) {
 			Tcl_Condition cond = NULL;
 			ev->done = &cond;
-			thread_send(app, (Tcl_Event*)ev, &cond, mutex);
+			Tcl_MutexLock(mutex);
+			Tcl_ThreadQueueEvent(app->thread_id, ev, TCL_QUEUE_TAIL);
+			Tcl_ThreadAlert(app->thread_id);
+			Tcl_ConditionWait(&cond, mutex, nullptr);
+			Tcl_MutexUnlock(mutex);
 			Tcl_ConditionFinalize(&cond);
 		}
 		else {
@@ -33,7 +29,6 @@ namespace tki {
 		}
 		if (Tcl_EvalObjv(ev->app->interp, argc, objs, flags) == TCL_ERROR) *(ev->err) = 1;
 		*(ev->ret) = Tcl_GetObjResult(ev->app->interp);
-		if (*(ev->ret)) safe_incr_refcnt(ev->ret->object);
 		if (ev->done) {
 			/* Wake up calling thread. */
 			Tcl_MutexLock(&ev->app->call_mutex);
@@ -96,7 +91,7 @@ namespace tki {
 		Object ret;
 		int err = 0;
 		CallEvent* ev = (CallEvent*)attemptckalloc(sizeof(CallEvent));
-		if (ev == nullptr) THROW_EXCEPTION("MemoryError", "no memory");
+		if (ev == nullptr) THROW_ERROR("MemoryError", "no memory");
 		memset(ev, 0, sizeof(CallEvent));
 		ev->proc = (Tcl_EventProc*)call_proc;
 		ev->app = this;
@@ -119,7 +114,7 @@ namespace tki {
 		cd->app = this;
 		cd->function = function;
 		CommandEvent* ev = (CommandEvent*)attemptckalloc(sizeof(CommandEvent));
-		if (ev == nullptr) THROW_EXCEPTION("MemoryError", "no memory");
+		if (ev == nullptr) THROW_ERROR("MemoryError", "no memory");
 		memset(ev, 0, sizeof(CommandEvent));
 		ev->proc = (Tcl_EventProc*)command_proc;
 		ev->app = this;

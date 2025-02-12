@@ -21,8 +21,6 @@ namespace tki {
 		TkApp* app;
 	};
 
-	void thread_send(TkApp* app, Tcl_Event* ev, Tcl_Condition* cond, Tcl_Mutex* mutex);
-
 	void thread_send_if(TkApp* app, Tcl_Event* ev_, Tcl_Mutex* mutex);
 
 	struct CallEvent : Event {
@@ -81,10 +79,8 @@ namespace tki {
 		   1. Caller of the command is in the interpreter thread:
 			  Execute the command in the calling thread.
 		   2. Caller is in a different thread: Must queue an event to
-			  the interpreter thread. */
-			  /* Not sure: Allocation of Tcl objects needs to occur in the
-				 interpreter thread. We ship the args to the target thread,
-				 and perform processing there. */
+			  the interpreter thread. 
+		   Returns void. */
 		Object eval(std::vector<Object> argv);
 
 		/* This mutex synchronizes inter-thread command creation/deletion. */

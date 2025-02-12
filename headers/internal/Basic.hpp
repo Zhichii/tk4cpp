@@ -54,7 +54,7 @@ typedef int Tcl_Size;
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
-#define THROW_EXCEPTION(EXC, MSG) { printf("%s[%s]", std::string(EXC).c_str(), std::string(MSG).c_str()); throw std::exception(); }
+#define THROW_ERROR(EXC, MSG) { printf("%s[%s]", std::string(EXC).c_str(), std::string(MSG).c_str()); throw std::exception(); }
 
 #define LAMBDA (int& err, std::vector<tki::Object>& args)->tki::Object
 

@@ -31,7 +31,6 @@ namespace tki {
         Tcl_Obj* object = NULL;
         bool no_func = true;
         Func function;
-        operator bool();
         ~Object();
         Object();
         Object(const Object& n);
@@ -53,6 +52,7 @@ namespace tki {
         Object(std::vector<Object> obj);
         Object(Func function);
         std::string str();
+        operator bool();
         friend std::ostream& operator<<(std::ostream& os, Object& obj);
     };
 

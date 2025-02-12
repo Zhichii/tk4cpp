@@ -9,7 +9,6 @@ namespace tki {
 		if (object) { Tcl_DecrRefCount(object); }
 	}
 
-	Object::operator bool() { return this->object; }
 	Object::~Object() {
 		safe_decr_refcnt(this->object);
 	}
@@ -37,12 +36,12 @@ namespace tki {
 	}
 	bool Object::operator==(Object n) {
 		if (this->no_func) return this->object == n.object;
-		THROW_EXCEPTION("UnreachableError", "You shouldn't do this. ");
+		THROW_ERROR("UnreachableError", "You shouldn't do this. ");
 		return false;
 	}
 	bool Object::operator!=(Object n) {
 		if (this->no_func) return this->object != n.object;
-		THROW_EXCEPTION("UnreachableError", "You shouldn't do this. ");
+		THROW_ERROR("UnreachableError", "You shouldn't do this. ");
 		return false;
 	}
 	Object::Object(bool n) {
@@ -142,6 +141,7 @@ namespace tki {
 		char* m = Tcl_GetStringFromObj(this->object, &len);
 		return std::string(m, len);
 	}
+	Object::operator bool() { return this->str() != ""; }
 	std::ostream& operator<<(std::ostream& os, Object& obj) {
 		os << obj.str();
 		return os;
