@@ -37,8 +37,8 @@ namespace tki {
         Object& operator=(const Object& n);
         // Will increase reference count. 
         Object(Tcl_Obj* n);
-        bool operator==(Object n);
-        bool operator!=(Object n);
+        bool operator==(Object n) const;
+        bool operator!=(Object n) const;
         Object(bool n);
         Object(sint n);
         Object(uint n);
@@ -51,9 +51,9 @@ namespace tki {
         Object(std::wstring n);
         Object(std::vector<Object> obj);
         Object(Func function);
-        std::string str();
-        operator bool();
-        friend std::ostream& operator<<(std::ostream& os, Object& obj);
+        std::string str() const;
+        bool is() const;
+        friend std::ostream& operator<<(std::ostream& os, const Object& obj);
     };
 
     Object copy_object(const Object& o);

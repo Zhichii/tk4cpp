@@ -40,11 +40,22 @@ namespace tki {
 	struct CommandEvent : Event {
 		std::string* name;
 		ClientData data;
-		int* err;
-		int create;
+		int mode; // 0=delete, 1=create.
 	};
 	void command_delete(ClientData clientData);
 	int command_proc(CommandEvent* ev, int flags);
+
+	struct VarEvent : Event {
+		std::string name1;
+		std::string name2;
+		Object* obj;
+		int flags;
+		int mode; // 0=set, 1=get, 2=unset.
+	};
+	void set_var(TkApp* app, std::string name1, std::string name2, Object* newval, int flags);
+	Object get_var(TkApp* app, std::string name1, std::string name2, int flags);
+	void unset_var(TkApp* app, std::string name1, std::string name2, int flags);
+	int var_proc(VarEvent* ev, int flags);
 
 	struct TkApp {
 
@@ -107,8 +118,8 @@ namespace tki {
 		void globalunsetvar(std::string name);
 		void globalunsetvar(std::string name1, std::string name2);
 
-		sint getint(Object obj);
-		sint getint(std::string str);
+		slll getint(Object obj);
+		slll getint(std::string str);
 		double getdouble(Object obj);
 		double getdouble(std::string str);
 		bool getboolean(Object obj);

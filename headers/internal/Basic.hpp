@@ -5,9 +5,6 @@
 
 #include <limits>
 
-// I don't know the usage of this.
-#define USE_TCL_UNICODE 
-
 #include <tcl.h>
 #include <tk.h>
 
@@ -55,6 +52,8 @@ typedef int Tcl_Size;
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
 #define THROW_ERROR(EXC, MSG) { printf("%s[%s]", std::string(EXC).c_str(), std::string(MSG).c_str()); throw std::exception(); }
+
+#define THROW_MEMORY_ERROR() THROW_ERROR("MemoryError", "no memory")
 
 #define LAMBDA (int& err, std::vector<tki::Object>& args)->tki::Object
 

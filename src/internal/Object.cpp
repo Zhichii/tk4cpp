@@ -34,12 +34,12 @@ namespace tki {
 		this->no_func = true;
 		safe_incr_refcnt(this->object);
 	}
-	bool Object::operator==(Object n) {
+	bool Object::operator==(Object n) const {
 		if (this->no_func) return this->object == n.object;
 		THROW_ERROR("UnreachableError", "You shouldn't do this. ");
 		return false;
 	}
-	bool Object::operator!=(Object n) {
+	bool Object::operator!=(Object n) const {
 		if (this->no_func) return this->object != n.object;
 		THROW_ERROR("UnreachableError", "You shouldn't do this. ");
 		return false;
@@ -135,14 +135,14 @@ namespace tki {
 		this->function = function;
 		this->no_func = false;
 	}
-	std::string Object::str() {
+	std::string Object::str() const {
 		if (!this->object) return "";
 		int len;
 		char* m = Tcl_GetStringFromObj(this->object, &len);
 		return std::string(m, len);
 	}
-	Object::operator bool() { return this->str() != ""; }
-	std::ostream& operator<<(std::ostream& os, Object& obj) {
+	bool Object::is() const { return this->str() != ""; }
+	std::ostream& operator<<(std::ostream& os, const Object& obj) {
 		os << obj.str();
 		return os;
 	}

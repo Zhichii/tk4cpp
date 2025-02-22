@@ -14,14 +14,11 @@ int main() {
 			return { args[1].str() + args[2].str() };
 		};
 		tki::Object connect = f;
-		tki::Object m = 1.145;
-		tki::Object n = tki::make_list("puts", 1.145);
-		tki::Object l = tki::make_list("puts", 1.145);
-		std::cout << m << "\n" << n << "\n";
-		tkapp.eval({ connect, "114", "514" });
 		Tcl_ThreadId thri;
 		Tcl_CreateThread(&thri, [](ClientData cd)->unsigned {
 			tki::TkApp& tkapp = *(tki::TkApp*)cd;
+			tkapp.setvar("ccb", "a b");
+			std::cout << "ccb: " << tkapp.getvar("ccb") << "\n";
 			tkapp.eval({ "font","create","font1","-family","Unifont" });
 			tkapp.eval({ "ttk::label",".a","-font","font1" });
 			tkapp.eval({ "pack",".a" });

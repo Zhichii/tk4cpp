@@ -29,13 +29,13 @@ namespace tki {
 		}
 		if (Tcl_EvalObjv(ev->app->interp, argc, objs, flags) == TCL_ERROR) *(ev->err) = 1;
 		*(ev->ret) = Tcl_GetObjResult(ev->app->interp);
+		delete[] objs;
 		if (ev->done) {
 			/* Wake up calling thread. */
 			Tcl_MutexLock(&ev->app->call_mutex);
 			Tcl_ConditionNotify(ev->done);
 			Tcl_MutexUnlock(&ev->app->call_mutex);
 		}
-		delete[] objs;
 		return 1; // 1 means success here.
 	}
 
@@ -47,7 +47,7 @@ namespace tki {
 		}
 		int err = TCL_OK;
 		Object ret = cd.function(err, objs);
-		if (ret)
+		if (ret.is())
 			Tcl_SetObjResult(cd.app->interp, Object(ret).object);
 		else
 			Tcl_ResetResult(cd.app->interp);
@@ -60,12 +60,14 @@ namespace tki {
 	}
 
 	int command_proc(CommandEvent* ev, int flags) {
-		if (ev->create) {
-			(*ev->err) = Tcl_CreateObjCommand(ev->app->interp, ev->name->c_str(), command_wrapper, ev->data, nullptr) == nullptr;
+		int err;
+		if (ev->mode) {
+			err = Tcl_CreateObjCommand(ev->app->interp, ev->name->c_str(), command_wrapper, ev->data, nullptr) == nullptr;
 		}
 		else {
-			(*ev->err) = Tcl_DeleteCommand(ev->app->interp, ev->name->c_str());
+			err = Tcl_DeleteCommand(ev->app->interp, ev->name->c_str());
 		}
+		if (err) THROW_TCL_ERROR(ev->app);
 		if (ev->done) {
 			/* Wake up calling thread. */
 			Tcl_MutexLock(&ev->app->command_mutex);
@@ -73,6 +75,105 @@ namespace tki {
 			Tcl_MutexUnlock(&ev->app->command_mutex);
 		}
 		return 1; // 1 means success here.
+	}
+
+	void set_var(TkApp* app, std::string name1, std::string name2, Object* newval, int flags) {
+		Object ok;
+		safe_incr_refcnt(newval->object);
+		if (name2 == "") {
+			ok = Tcl_SetVar2Ex(app->interp, name1.c_str(), NULL, newval->object, flags);
+		}
+		else {
+			ok = Tcl_SetVar2Ex(app->interp, name1.c_str(), name2.c_str(), newval->object, flags);
+		}
+		if (!ok.is()) THROW_TCL_ERROR(app);
+	}
+
+	Object get_var(TkApp* app, std::string name1, std::string name2, int flags) {
+		Tcl_Obj* ret;
+		if (name2 == "")
+			ret = Tcl_GetVar2Ex(app->interp, name1.c_str(), NULL, flags);
+		else
+			ret = Tcl_GetVar2Ex(app->interp, name1.c_str(), name2.c_str(), flags);
+		if (!ret) THROW_TCL_ERROR(app);
+		return ret;
+	}
+
+	void unset_var(TkApp* app, std::string name1, std::string name2, int flags) {
+		int ok;
+		if (name2 == "") {
+			ok = Tcl_UnsetVar2(app->interp, name1.c_str(), NULL, flags);
+		}
+		else {
+			ok = Tcl_UnsetVar2(app->interp, name1.c_str(), name2.c_str(), flags);
+		}
+		if (ok == TCL_ERROR) THROW_TCL_ERROR(app);
+	}
+
+	int var_proc(VarEvent* ev, int flags) {
+		switch (ev->mode) {
+		case 0: {
+			set_var(ev->app, ev->name1, ev->name2, ev->obj, ev->flags);
+			*(ev->obj) = {};
+		} break;
+		case 1: {
+			*(ev->obj) = get_var(ev->app, ev->name1, ev->name2, ev->flags);
+		} break;
+		case 2: {
+			unset_var(ev->app, ev->name1, ev->name2, ev->flags);
+			*(ev->obj) = {};
+		} break;
+		}
+		if (ev->done) {
+			/* Wake up calling thread. */
+			Tcl_MutexLock(&ev->app->var_mutex);
+			Tcl_ConditionNotify(ev->done);
+			Tcl_MutexUnlock(&ev->app->var_mutex);
+		}
+		return 1; // 1 means success here.
+	}
+
+	std::wstring TkApp::unicode_fromobj(Object object) {
+		Tcl_Obj* obj = object.object;
+		Tcl_Size len;
+		if (obj->typePtr != NULL &&
+			(obj->typePtr == this->string_type ||
+				obj->typePtr == this->utf32_string_type)) {
+			const Tcl_UniChar* u = Tcl_GetUnicodeFromObj(obj, &len);
+			if (sizeof(Tcl_UniChar) == 2) {
+				const wchar_t* w = (wchar_t*)u;
+				return w;
+			}
+			else THROW_ERROR("ValueError", "unknown char size");
+		}
+	}
+	std::string TkApp::string_fromobj(Object object) {
+		Tcl_Obj* obj = object.object;
+		Tcl_Size len;
+		const char* w = Tcl_GetStringFromObj(obj, &len);
+		return w;
+	}
+	bool TkApp::boolean_fromobj(Object object) {
+		Tcl_Obj* obj = object.object;
+		int boolValue;
+		if (Tcl_GetBooleanFromObj(this->interp, obj, &boolValue) == TCL_ERROR) THROW_TCL_ERROR(this);
+		return boolValue;
+	}
+	sint TkApp::int_fromobj(Object object) {
+		Tcl_Obj* obj = object.object;
+		Tcl_WideInt wideValue;
+		if (Tcl_GetWideIntFromObj(this->interp, obj, &wideValue) == TCL_OK) {
+			if (sizeof(wideValue) <= sizeof(uint))
+				return wideValue;
+			else THROW_ERROR("OverflowError", "wide is too long");
+		}
+		else THROW_TCL_ERROR(this);
+	}
+	double TkApp::double_fromobj(Object object) {
+		Tcl_Obj* obj = object.object;
+		double doubleValue;
+		Tcl_GetDoubleFromObj(this->interp, obj, &doubleValue);
+		return doubleValue;
 	}
 
 	Object TkApp::eval(std::vector<Object> argv) {
@@ -91,7 +192,7 @@ namespace tki {
 		Object ret;
 		int err = 0;
 		CallEvent* ev = (CallEvent*)attemptckalloc(sizeof(CallEvent));
-		if (ev == nullptr) THROW_ERROR("MemoryError", "no memory");
+		if (ev == nullptr) THROW_MEMORY_ERROR();
 		memset(ev, 0, sizeof(CallEvent));
 		ev->proc = (Tcl_EventProc*)call_proc;
 		ev->app = this;
@@ -103,7 +204,7 @@ namespace tki {
 		thread_send_if(this, (Tcl_Event*)ev, &this->call_mutex);
 		if (err == TCL_ERROR) THROW_TCL_ERROR(this);
 #ifdef _DEBUG
-		if (ret) printf("%s\n", ret.str().c_str());
+		if (ret.is()) printf("%s\n", ret.str().c_str());
 #endif
 		return ret;
 	}
@@ -114,16 +215,124 @@ namespace tki {
 		cd->app = this;
 		cd->function = function;
 		CommandEvent* ev = (CommandEvent*)attemptckalloc(sizeof(CommandEvent));
-		if (ev == nullptr) THROW_ERROR("MemoryError", "no memory");
+		if (ev == nullptr) THROW_MEMORY_ERROR();
 		memset(ev, 0, sizeof(CommandEvent));
 		ev->proc = (Tcl_EventProc*)command_proc;
 		ev->app = this;
 		ev->data = (ClientData)cd;
-		ev->create = 1;
-		ev->err = &err;
+		ev->mode = 1;
 		ev->name = &name;
 		thread_send_if(this, (Tcl_Event*)ev, &this->command_mutex);
-		if (err) THROW_TCL_ERROR(this);
+	}
+
+	void TkApp::deletecommand(std::string name) {
+		int err;
+		CommandEvent* ev = (CommandEvent*)attemptckalloc(sizeof(CommandEvent));
+		if (ev == nullptr) THROW_MEMORY_ERROR();
+		memset(ev, 0, sizeof(CommandEvent));
+		ev->proc = (Tcl_EventProc*)command_proc;
+		ev->app = this;
+		ev->data = NULL;
+		ev->mode = 0;
+		ev->name = &name;
+		thread_send_if(this, (Tcl_Event*)ev, &this->command_mutex);
+	}
+
+	Object TkApp::varinvoke(int mode, std::string name1, std::string name2, Object obj, int flags) {
+		Object object = obj;
+		VarEvent* ev = (VarEvent*)attemptckalloc(sizeof(VarEvent));
+		if (ev == nullptr) THROW_MEMORY_ERROR();
+		memset(ev, 0, sizeof(VarEvent));
+		ev->proc = (Tcl_EventProc*)var_proc;
+		ev->app = this;
+		ev->name1 = std::string(name1);
+		ev->name2 = std::string(name2);
+		ev->obj = &object;
+		ev->mode = mode;
+		ev->flags = flags;
+		thread_send_if(this, (Tcl_Event*)ev, &this->var_mutex);
+		return object;
+	}
+
+	void TkApp::setvar(std::string name, Object var) {
+		varinvoke(0, name, "", var, TCL_LEAVE_ERR_MSG);
+	}
+	void TkApp::setvar(std::string name1, std::string name2, Object var) {
+		varinvoke(0, name1, name2, var, TCL_LEAVE_ERR_MSG);
+	}
+	void TkApp::globalsetvar(std::string name, Object var) {
+		varinvoke(0, name, "", var, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
+	void TkApp::globalsetvar(std::string name1, std::string name2, Object var) {
+		varinvoke(0, name1, name2, var, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
+	Object TkApp::getvar(std::string name) {
+		return varinvoke(1, name, "", {}, TCL_LEAVE_ERR_MSG);
+	}
+	Object TkApp::getvar(std::string name1, std::string name2) {
+		return varinvoke(1, name1, name2, {}, TCL_LEAVE_ERR_MSG);
+	}
+	Object TkApp::globalgetvar(std::string name) {
+		return varinvoke(1, name, "", {}, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
+	Object TkApp::globalgetvar(std::string name1, std::string name2) {
+		return varinvoke(1, name1, name2, {}, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
+	void TkApp::unsetvar(std::string name) {
+		varinvoke(2, name, "", {}, TCL_LEAVE_ERR_MSG);
+	}
+	void TkApp::unsetvar(std::string name1, std::string name2) {
+		varinvoke(2, name1, name2, {}, TCL_LEAVE_ERR_MSG);
+	}
+	void TkApp::globalunsetvar(std::string name) {
+		varinvoke(2, name, "", {}, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
+	void TkApp::globalunsetvar(std::string name1, std::string name2) {
+		varinvoke(2, name1, name2, {}, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	}
+
+	slll TkApp::getint(std::string str) {
+		sint ret = int_fromobj(Object(str));
+		return ret;
+	}
+	slll TkApp::getint(Object obj) {
+		return int_fromobj(obj);
+	}
+	double TkApp::getdouble(std::string str) {
+		sint ret = double_fromobj(Object(str));
+		return ret;
+	}
+	double TkApp::getdouble(Object obj) {
+		return double_fromobj(obj);
+	}
+	bool TkApp::getboolean(std::string str) {
+		int v;
+		Tcl_GetBoolean(this->interp, str.c_str(), &v);
+		return v == 1;
+	}
+	bool TkApp::getboolean(Object obj) {
+		return boolean_fromobj(obj);
+	}
+
+	std::vector<Object> TkApp::splitlist(Object obj) {
+		Tcl_Size objc;
+		Tcl_Obj** objv;
+		if (Tcl_ListObjGetElements(this->interp, obj.object, &objc, &objv) == TCL_ERROR) {
+			THROW_TCL_ERROR(this);
+		}
+		std::vector<Object> v;
+		for (Tcl_Size i = 0; i < objc; i++) v.push_back(objv[i]);
+		return v;
+	}
+	std::vector<Object> TkApp::splitlist(std::string str) {
+		Tcl_Size objc;
+		const char** objv;
+		if (Tcl_SplitList(this->interp, str.c_str(), &objc, &objv) == TCL_ERROR) {
+			THROW_TCL_ERROR(this);
+		}
+		std::vector<Object> v;
+		for (Tcl_Size i = 0; i < objc; i++) v.push_back(objv[i]);
+		return v;
 	}
 
 	TkApp::TkApp() {
