@@ -6,13 +6,14 @@
 #include "Basic.hpp"
 #include "Object.hpp"
 
-#ifndef TKI_TCL_ERROR
+#ifndef TKI_FLAGBUILD_TCL_ERR
 // Will crash if there's an Tcl error.
-#define THROW_TCL_ERROR(PTKAPP) { printf("%s[%s]", "TclError", Tcl_GetStringResult(PTKAPP->interp)); throw std::exception(); }
+#define TKI_TCL_ERR(PTKAPP) { printf("TclError[%s]\n", Tcl_GetStringResult((PTKAPP)->interp)); throw std::exception(); }
 #else
 // Won't crash.
-#define THROW_TCL_ERROR(PTKAPP) { printf("%s[%s]", "TclError", Tcl_GetStringResult(PTKAPP->interp)); }
+#define TKI_TCL_ERR(PTKAPP) { printf("TclError[%s]\n", Tcl_GetStringResult((PTKAPP)->interp)); }
 #endif
+#define TKI_THROW(PTKAPP,RET) { Tcl_SetObjResult((PTKAPP)->interp, tki::Object(RET).object); TKI_TCL_ERR(PTKAPP); }
 
 namespace tki {
 
@@ -26,7 +27,6 @@ namespace tki {
 	struct CallEvent : Event {
 		std::vector<Object>* argv;
 		Object* ret;
-		int* err;
 		int flags;
 	};
 	int call_proc(CallEvent* ev, int flags);
@@ -92,7 +92,7 @@ namespace tki {
 		   2. Caller is in a different thread: Must queue an event to
 			  the interpreter thread. 
 		   Returns void. */
-		Object eval(std::vector<Object> argv);
+		Object call(std::vector<Object> argv);
 
 		/* This mutex synchronizes inter-thread command creation/deletion. */
 		Tcl_Mutex command_mutex;
@@ -118,8 +118,8 @@ namespace tki {
 		void globalunsetvar(std::string name);
 		void globalunsetvar(std::string name1, std::string name2);
 
-		slll getint(Object obj);
-		slll getint(std::string str);
+		sint getint(Object obj);
+		sint getint(std::string str);
 		double getdouble(Object obj);
 		double getdouble(std::string str);
 		bool getboolean(Object obj);

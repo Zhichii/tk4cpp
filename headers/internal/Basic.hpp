@@ -12,9 +12,9 @@
                         (TK_MINOR_VERSION << 16) | \
                         (TK_RELEASE_LEVEL << 8) | \
                         (TK_RELEASE_SERIAL << 0))
-#if TK_HEX_VERSION != 0x0806020f
-#error "Please use Tk 8.6.15, \
-(I don't want to consider other compatible versions.) "
+
+#if TK_HEX_VERSION < 0x0805020c
+#error "Tk older than 8.5.12 not supported"
 #endif
 
 #ifndef TCL_WITH_EXTERNAL_TOMMATH
@@ -45,24 +45,22 @@ typedef int Tcl_Size;
 #include <stdexcept>
 #include <malloc.h>
 
-#define MIN(x, y) (((x) > (y)) ? (y) : (x))
+#define TKI_MIN(x, y) (((x) > (y)) ? (y) : (x))
 
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define TKI_MAX(x, y) (((x) > (y)) ? (x) : (y))
 
-#define ABS(x) ((x) < 0 ? -(x) : (x))
+#define TKI_ABS(x) ((x) < 0 ? -(x) : (x))
 
-#define THROW_ERROR(EXC, MSG) { printf("%s[%s]", std::string(EXC).c_str(), std::string(MSG).c_str()); throw std::exception(); }
+#define TKI_ERR(EXC, MSG) { printf("%s[%s]\n", std::string(EXC).c_str(), std::string(MSG).c_str()); throw std::exception(); }
 
-#define THROW_MEMORY_ERROR() THROW_ERROR("MemoryError", "no memory")
-
-#define LAMBDA (int& err, std::vector<tki::Object>& args)->tki::Object
+#define TKI_MEM_ERR() TKI_ERR("MemoryError", "no memory")
 
 namespace tki {
 
-    typedef int sint;
-    typedef unsigned int uint;
-    typedef long long slll;
-    typedef unsigned long long ulll;
+    typedef int si32;
+    typedef unsigned int ui32;
+    typedef long long sint;
+    typedef unsigned long long uint;
 
     struct TkApp;
 

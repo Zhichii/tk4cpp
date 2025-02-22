@@ -6,7 +6,7 @@
 #include "Basic.hpp"
 
 // Ignore the error of "..." here if it does. 
-#define _EXPAND_ARGS(args) (std::vector<Object>{ Object(args)... })
+#define TKI_ARGS(args) (std::vector<Object>{ Object(args)... })
 
 namespace tki {
 
@@ -24,7 +24,7 @@ namespace tki {
     };
 
     struct Object;
-    typedef Object _Func(int&,std::vector<Object>&);
+    typedef Object _Func(std::vector<Object>&);
     typedef std::function<_Func> Func;
     typedef _FuncWrap<_Func> FuncWrapper;
     struct Object {
@@ -40,10 +40,10 @@ namespace tki {
         bool operator==(Object n) const;
         bool operator!=(Object n) const;
         Object(bool n);
+        Object(si32 n);
+        Object(ui32 n);
         Object(sint n);
         Object(uint n);
-        Object(slll n);
-        Object(ulll n);
         Object(double n);
         Object(const char* n);
         Object(const wchar_t* n);

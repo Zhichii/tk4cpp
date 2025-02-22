@@ -1,15 +1,13 @@
-#define TKI_TCL_ERROR
-#include <internal/Basic.hpp>
-#include <internal/Object.hpp>
-#include <internal/TkApp.hpp>
+#include <Tki.hpp>
 
 int main() {
 	tki::TkApp tkapp;
 	{
-		tki::Func f = [&] LAMBDA {
+		tki::Func f = [&] TKIL {
 			if (args.size() != 3) {
-				err = 1;
-				return ("wrong # args: should be \"" + args[0].str() + " numberA number B\"");
+				TKI_THROW(&tkapp, 
+					"wrong # args: should be \"" + args[0].str() + " numberA number B\"");
+				return {};
 			}
 			return { args[1].str() + args[2].str() };
 		};
@@ -19,15 +17,15 @@ int main() {
 			tki::TkApp& tkapp = *(tki::TkApp*)cd;
 			tkapp.setvar("ccb", "a b");
 			std::cout << "ccb: " << tkapp.getvar("ccb") << "\n";
-			tkapp.eval({ "font","create","font1","-family","Unifont" });
-			tkapp.eval({ "ttk::label",".a","-font","font1" });
-			tkapp.eval({ "pack",".a" });
+			tkapp.call({ "font","create","font1","-family","Unifont" });
+			tkapp.call({ "ttk::label",".a","-font","font1" });
+			tkapp.call({ "pack",".a" });
 			size_t yyy = 0;
-			tkapp.eval({ ".a","config","-text",yyy++ });
+			tkapp.call({ ".a","config","-text",yyy++ });
 			Tcl_Sleep(500);
 			size_t zzz = -1;
 			for (; yyy <= zzz; yyy++) {
-				tkapp.eval({ ".a","config","-text",yyy });
+				tkapp.call({ ".a","config","-text",yyy });
 				Tcl_Sleep(10);
 			}
 			return 0;

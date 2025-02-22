@@ -22,12 +22,13 @@ namespace tki {
 
 	int call_proc(CallEvent* ev, int flags) {
 		auto& argv = *(ev->argv);
-		ulll argc = argv.size();
+		uint argc = argv.size();
 		Tcl_Obj** objs = (Tcl_Obj**)(new Tcl_Obj*[argc]);
-		for (ulll i = 0; i < argc; i++) {
+		for (uint i = 0; i < argc; i++) {
 			objs[i] = argv[i].object;
 		}
-		if (Tcl_EvalObjv(ev->app->interp, argc, objs, flags) == TCL_ERROR) *(ev->err) = 1;
+		if (Tcl_EvalObjv(ev->app->interp, argc, objs, flags) == TCL_ERROR)
+			TKI_TCL_ERR(ev->app);
 		*(ev->ret) = Tcl_GetObjResult(ev->app->interp);
 		delete[] objs;
 		if (ev->done) {
@@ -45,13 +46,12 @@ namespace tki {
 		for (Tcl_Size i = 0; i < objc; i++) {
 			objs.push_back(objv[i]);
 		}
-		int err = TCL_OK;
-		Object ret = cd.function(err, objs);
+		Object ret = cd.function(objs);
 		if (ret.is())
-			Tcl_SetObjResult(cd.app->interp, Object(ret).object);
+			Tcl_SetObjResult(cd.app->interp, ret.object);
 		else
 			Tcl_ResetResult(cd.app->interp);
-		return err;
+		return 1;
 	}
 
 	void command_delete(ClientData clientData) {
@@ -67,7 +67,7 @@ namespace tki {
 		else {
 			err = Tcl_DeleteCommand(ev->app->interp, ev->name->c_str());
 		}
-		if (err) THROW_TCL_ERROR(ev->app);
+		if (err) TKI_TCL_ERR(ev->app);
 		if (ev->done) {
 			/* Wake up calling thread. */
 			Tcl_MutexLock(&ev->app->command_mutex);
@@ -86,7 +86,7 @@ namespace tki {
 		else {
 			ok = Tcl_SetVar2Ex(app->interp, name1.c_str(), name2.c_str(), newval->object, flags);
 		}
-		if (!ok.is()) THROW_TCL_ERROR(app);
+		if (!ok.is()) TKI_TCL_ERR(app);
 	}
 
 	Object get_var(TkApp* app, std::string name1, std::string name2, int flags) {
@@ -95,7 +95,7 @@ namespace tki {
 			ret = Tcl_GetVar2Ex(app->interp, name1.c_str(), NULL, flags);
 		else
 			ret = Tcl_GetVar2Ex(app->interp, name1.c_str(), name2.c_str(), flags);
-		if (!ret) THROW_TCL_ERROR(app);
+		if (!ret) TKI_TCL_ERR(app);
 		return ret;
 	}
 
@@ -107,7 +107,7 @@ namespace tki {
 		else {
 			ok = Tcl_UnsetVar2(app->interp, name1.c_str(), name2.c_str(), flags);
 		}
-		if (ok == TCL_ERROR) THROW_TCL_ERROR(app);
+		if (ok == TCL_ERROR) TKI_TCL_ERR(app);
 	}
 
 	int var_proc(VarEvent* ev, int flags) {
@@ -144,8 +144,9 @@ namespace tki {
 				const wchar_t* w = (wchar_t*)u;
 				return w;
 			}
-			else THROW_ERROR("ValueError", "unknown char size");
+			else TKI_ERR("ValueError", "unknown char size");
 		}
+		else return {};
 	}
 	std::string TkApp::string_fromobj(Object object) {
 		Tcl_Obj* obj = object.object;
@@ -156,18 +157,18 @@ namespace tki {
 	bool TkApp::boolean_fromobj(Object object) {
 		Tcl_Obj* obj = object.object;
 		int boolValue;
-		if (Tcl_GetBooleanFromObj(this->interp, obj, &boolValue) == TCL_ERROR) THROW_TCL_ERROR(this);
+		if (Tcl_GetBooleanFromObj(this->interp, obj, &boolValue) == TCL_ERROR) TKI_TCL_ERR(this);
 		return boolValue;
 	}
 	sint TkApp::int_fromobj(Object object) {
 		Tcl_Obj* obj = object.object;
 		Tcl_WideInt wideValue;
 		if (Tcl_GetWideIntFromObj(this->interp, obj, &wideValue) == TCL_OK) {
-			if (sizeof(wideValue) <= sizeof(uint))
+			if (sizeof(wideValue) <= sizeof(ui32))
 				return wideValue;
-			else THROW_ERROR("OverflowError", "wide is too long");
+			else TKI_ERR("OverflowError", "wide is too long");
 		}
-		else THROW_TCL_ERROR(this);
+		else TKI_TCL_ERR(this);
 	}
 	double TkApp::double_fromobj(Object object) {
 		Tcl_Obj* obj = object.object;
@@ -176,33 +177,30 @@ namespace tki {
 		return doubleValue;
 	}
 
-	Object TkApp::eval(std::vector<Object> argv) {
+	Object TkApp::call(std::vector<Object> argv) {
 		for (auto& i : argv) {
 			if (i.no_func) continue;
 			this->createcommand(i.str(), i.function);
 		}
-		ulll argc = argv.size();
+		uint argc = argv.size();
 #ifdef _DEBUG
 		printf("> ");
-		for (ulll i = 0; i < argc; i++) {
+		for (uint i = 0; i < argc; i++) {
 			printf("%s ", argv[i].str().c_str());
 		}
 		printf("\n");
 #endif
 		Object ret;
-		int err = 0;
 		CallEvent* ev = (CallEvent*)attemptckalloc(sizeof(CallEvent));
-		if (ev == nullptr) THROW_MEMORY_ERROR();
+		if (ev == nullptr) TKI_MEM_ERR();
 		memset(ev, 0, sizeof(CallEvent));
 		ev->proc = (Tcl_EventProc*)call_proc;
 		ev->app = this;
 		ev->argv = &argv;
 		ev->flags = TCL_EVAL_DIRECT | TCL_EVAL_GLOBAL;
 		ev->ret = &ret;
-		ev->err = &err;
 		ev->done = NULL;
 		thread_send_if(this, (Tcl_Event*)ev, &this->call_mutex);
-		if (err == TCL_ERROR) THROW_TCL_ERROR(this);
 #ifdef _DEBUG
 		if (ret.is()) printf("%s\n", ret.str().c_str());
 #endif
@@ -210,12 +208,11 @@ namespace tki {
 	}
 
 	void TkApp::createcommand(std::string name, Func function) {
-		int err;
 		CmdClientData* cd = new CmdClientData;
 		cd->app = this;
 		cd->function = function;
 		CommandEvent* ev = (CommandEvent*)attemptckalloc(sizeof(CommandEvent));
-		if (ev == nullptr) THROW_MEMORY_ERROR();
+		if (ev == nullptr) TKI_MEM_ERR();
 		memset(ev, 0, sizeof(CommandEvent));
 		ev->proc = (Tcl_EventProc*)command_proc;
 		ev->app = this;
@@ -226,9 +223,8 @@ namespace tki {
 	}
 
 	void TkApp::deletecommand(std::string name) {
-		int err;
 		CommandEvent* ev = (CommandEvent*)attemptckalloc(sizeof(CommandEvent));
-		if (ev == nullptr) THROW_MEMORY_ERROR();
+		if (ev == nullptr) TKI_MEM_ERR();
 		memset(ev, 0, sizeof(CommandEvent));
 		ev->proc = (Tcl_EventProc*)command_proc;
 		ev->app = this;
@@ -241,7 +237,7 @@ namespace tki {
 	Object TkApp::varinvoke(int mode, std::string name1, std::string name2, Object obj, int flags) {
 		Object object = obj;
 		VarEvent* ev = (VarEvent*)attemptckalloc(sizeof(VarEvent));
-		if (ev == nullptr) THROW_MEMORY_ERROR();
+		if (ev == nullptr) TKI_MEM_ERR();
 		memset(ev, 0, sizeof(VarEvent));
 		ev->proc = (Tcl_EventProc*)var_proc;
 		ev->app = this;
@@ -291,19 +287,19 @@ namespace tki {
 		varinvoke(2, name1, name2, {}, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	}
 
-	slll TkApp::getint(std::string str) {
-		sint ret = int_fromobj(Object(str));
-		return ret;
+	sint TkApp::getint(std::string str) {
+		return this->int_fromobj(str);
 	}
-	slll TkApp::getint(Object obj) {
-		return int_fromobj(obj);
+	sint TkApp::getint(Object obj) {
+		return this->int_fromobj(obj);
 	}
 	double TkApp::getdouble(std::string str) {
-		sint ret = double_fromobj(Object(str));
-		return ret;
+		double v;
+		Tcl_GetDouble(this->interp, str.c_str(), &v);
+		return v;
 	}
 	double TkApp::getdouble(Object obj) {
-		return double_fromobj(obj);
+		return this->double_fromobj(obj);
 	}
 	bool TkApp::getboolean(std::string str) {
 		int v;
@@ -311,14 +307,14 @@ namespace tki {
 		return v == 1;
 	}
 	bool TkApp::getboolean(Object obj) {
-		return boolean_fromobj(obj);
+		return this->boolean_fromobj(obj);
 	}
 
 	std::vector<Object> TkApp::splitlist(Object obj) {
 		Tcl_Size objc;
 		Tcl_Obj** objv;
 		if (Tcl_ListObjGetElements(this->interp, obj.object, &objc, &objv) == TCL_ERROR) {
-			THROW_TCL_ERROR(this);
+			TKI_TCL_ERR(this);
 		}
 		std::vector<Object> v;
 		for (Tcl_Size i = 0; i < objc; i++) v.push_back(objv[i]);
@@ -328,7 +324,7 @@ namespace tki {
 		Tcl_Size objc;
 		const char** objv;
 		if (Tcl_SplitList(this->interp, str.c_str(), &objc, &objv) == TCL_ERROR) {
-			THROW_TCL_ERROR(this);
+			TKI_TCL_ERR(this);
 		}
 		std::vector<Object> v;
 		for (Tcl_Size i = 0; i < objc; i++) v.push_back(objv[i]);

@@ -36,18 +36,36 @@ namespace tki {
 	}
 	bool Object::operator==(Object n) const {
 		if (this->no_func) return this->object == n.object;
-		THROW_ERROR("UnreachableError", "You shouldn't do this. ");
+		TKI_ERR("UnreachableError", "You shouldn't do this. ");
 		return false;
 	}
 	bool Object::operator!=(Object n) const {
 		if (this->no_func) return this->object != n.object;
-		THROW_ERROR("UnreachableError", "You shouldn't do this. ");
+		TKI_ERR("UnreachableError", "You shouldn't do this. ");
 		return false;
 	}
 	Object::Object(bool n) {
 		this->object = Tcl_NewBooleanObj(n);
 		this->no_func = true;
 		safe_incr_refcnt(this->object);
+	}
+	Object::Object(si32 n) {
+		mp_int i;
+		mp_init(&i);
+		mp_set_ll(&i, n);
+		this->object = Tcl_NewBignumObj(&i);
+		this->no_func = true;
+		safe_incr_refcnt(this->object);
+		mp_clear(&i);
+	}
+	Object::Object(ui32 n) {
+		mp_int i;
+		mp_init(&i);
+		mp_set_ull(&i, n);
+		this->object = Tcl_NewBignumObj(&i);
+		this->no_func = true;
+		safe_incr_refcnt(this->object);
+		mp_clear(&i);
 	}
 	Object::Object(sint n) {
 		mp_int i;
@@ -67,24 +85,6 @@ namespace tki {
 		safe_incr_refcnt(this->object);
 		mp_clear(&i);
 	}
-	Object::Object(slll n) {
-		mp_int i;
-		mp_init(&i);
-		mp_set_ll(&i, n);
-		this->object = Tcl_NewBignumObj(&i);
-		this->no_func = true;
-		safe_incr_refcnt(this->object);
-		mp_clear(&i);
-	}
-	Object::Object(ulll n) {
-		mp_int i;
-		mp_init(&i);
-		mp_set_ull(&i, n);
-		this->object = Tcl_NewBignumObj(&i);
-		this->no_func = true;
-		safe_incr_refcnt(this->object);
-		mp_clear(&i);
-	}
 	Object::Object(double n) {
 		this->object = Tcl_NewDoubleObj(n);
 		this->no_func = true;
@@ -96,9 +96,9 @@ namespace tki {
 		safe_incr_refcnt(this->object);
 	}
 	Object::Object(const wchar_t* n) {
-		ulll len = wcslen(n);
+		uint len = wcslen(n);
 		Tcl_UniChar* m = new Tcl_UniChar[len];
-		for (ulll i = 0; i < len; i++) m[i] = n[i];
+		for (uint i = 0; i < len; i++) m[i] = n[i];
 		this->object = Tcl_NewUnicodeObj(m, -1);
 		this->no_func = true;
 		safe_incr_refcnt(this->object);
@@ -110,25 +110,25 @@ namespace tki {
 		safe_incr_refcnt(this->object);
 	}
 	Object::Object(std::wstring n) {
-		ulll len = n.size();
+		uint len = n.size();
 		Tcl_UniChar* m = new Tcl_UniChar[len];
-		for (ulll i = 0; i < len; i++) m[i] = n[i];
+		for (uint i = 0; i < len; i++) m[i] = n[i];
 		this->object = Tcl_NewUnicodeObj(m, -1);
 		this->no_func = true;
 		safe_incr_refcnt(this->object);
 		delete[] m;
 	}
 	Object::Object(std::vector<Object> n) {
-		ulll len = n.size();
+		uint len = n.size();
 		Tcl_Obj** m = new Tcl_Obj*[len];
-		for (ulll i = 0; i < len; i++) m[i] = n[i].object;
+		for (uint i = 0; i < len; i++) m[i] = n[i].object;
 		this->object = Tcl_NewListObj(len, m);
 		delete[] m;
 		safe_incr_refcnt(this->object);
 	}
 	Object::Object(Func function) {
 		FuncWrapper* func = (FuncWrapper*)&function;
-		std::string id = "CPP_FUNC" + std::to_string((ulll)(func->force_get()));
+		std::string id = "CPP_FUNC" + std::to_string((uint)(func->force_get()));
 		this->object = Tcl_NewStringObj(id.c_str(), id.size());
 		this->no_func = true;
 		safe_incr_refcnt(this->object);
