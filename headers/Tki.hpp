@@ -48,8 +48,8 @@ namespace tki {
 		operator std::string();
 	};
 
-	class Tk;
-	class Misc;
+	struct Tk;
+	struct Misc;
 
 	static bool _support_default_root = true;
 	static Misc* _default_root = NULL;
@@ -67,8 +67,7 @@ namespace tki {
 
 	/* Internal class. Stores function to call when some user
 	defined Tcl function is called e.g. after an event occurred. */
-	class CallWrapper {
-	public:
+	struct CallWrapper {
 
 		Func func;
 		Func subst;
@@ -86,8 +85,7 @@ namespace tki {
 
 	Subclasses StringVar, IntVar, DoubleVar, BooleanVar are specializations
 	that constrain the type of the value returned from get(). */
-	class Variable {
-	public:
+	struct Variable {
 
 		static std::string _default;
 		Tk* _root = NULL;
@@ -145,8 +143,7 @@ namespace tki {
 
 	/* Internal class.
 	Base class which defines methods common for interior widgets. */
-	class Misc {
-	public:
+	struct Misc {
 
 		TkApp* tk;
 
@@ -160,45 +157,25 @@ namespace tki {
 
 		/* Internal function.
 		Delete all Tcl commands created for this widget in the Tcl interpreter. */
-		void destroy() {
-			if (this->_tclCommands.size() != 0) {
-				for (const std::string& name : this->_tclCommands) {
-					this->tk->deletecommand(name);
-				}
-				this->_tclCommands = {};
-			}
-		}
+		void destroy();
 
 		/* Internal function.
 		Delete the Tcl command provided in NAME. */
-		void deletecommand(std::string name) {
-			this->deletecommand(name);
-			for (uint i = 0; i < this->_tclCommands.size(); i++) {
-				if (this->_tclCommands[i] == name) {
-					this->_tclCommands.erase(this->_tclCommands.begin() + i);
-				}
-			}
-		}
+		void deletecommand(std::string name);
 
 		/* Set Tcl internal variable, whether the look and feel
 		should adhere to Motif.
 		A parameter of 1 means adhere to Motif (e.g. no color
 		change if mouse passes over slider). */
-		bool tk_strictMotif() {
-			return this->tk->boolean_fromobj(this->tk->call({ "set","tk_strictMotif" }));
-		}
+		bool tk_strictMotif();
 
 		/* Set Tcl internal variable, whether the look and feel
 		should adhere to Motif.
 		Returns the set value. */
-		bool tk_strictMotif(bool boolean) {
-			return this->tk->boolean_fromobj(this->tk->call({ "set","tk_strictMotif",std::to_string(boolean) }));
-		}
+		bool tk_strictMotif(bool boolean);
 
 		// Change the color scheme to light brown as used in Tk 3.6 and before.
-		void tk_bisque() {
-			this->tk->call({ "tk_bisque" });
-		}
+		void tk_bisque();
 
 		/* Set a new color scheme for all widget elements.
 		A single color as argument will cause that all colors of Tk
@@ -213,7 +190,7 @@ namespace tki {
 		void tk_setPalette(Us... args) {
 			std::vector<Object> v;
 			v = { "tk_setPalette" };
-			std::vector<Object> argv = readargs(args...);;
+			std::vector<Object> argv = TKI_ARGS(args);;
 			for (const auto& i : argv) v.push_back(i);
 			this->tk->call(v);
 		}
@@ -221,44 +198,58 @@ namespace tki {
 		/* Wait until the variable is modified.
 		A parameter of type IntVar, StringVar, DoubleVar or
 		BooleanVar must be given. */
-		void wait_variable(std::string name = "CPP_VAR") {
-			this->tk->call({ "tkwait","variable",name });
-		}
-		void waitvar(std::string name = "CPP_VAR") {
-			wait_variable(name);
-		}
+		void wait_variable(std::string name = "CPP_VAR");
+		void waitvar(std::string name = "CPP_VAR");
 		// XXX b/w compat
 
 		// Wait until this is destroyed.
-		void wait_window() {
-			this->tk->call({ "tkwait","window",std::string(this->_w) });
-		}
+		void wait_window();
 		// Wait until a WIDGET is destroyed.
-		void wait_window(Misc* window) {
-			this->tk->call({ "tkwait","window",std::string(window->_w) });
-		}
+		void wait_window(Misc* window);
 
 		/* Wait until the visibility of this changes
 		(e.g. this appears). */
-		void wait_visibility() {
-			this->tk->call({ "tkwait","window",std::string(this->_w) });
-		}
+		void wait_visibility();
 		/* Wait until the visibility of a WIDGET changes
 		(e.g. it appears). */
-		void wait_visibility(Misc* window) {
-			this->tk->call({ "tkwait","window",std::string(window->_w) });
-		}
+		void wait_visibility(Misc* window);
 
 		// Set Tcl variable NAME to VALUE.
-		void setvar(std::string name = "CPP_VAR", Object value = "1") {
-			this->tk->setvar(name, value);
-		}
+		void setvar(std::string name = "CPP_VAR", Object value = "1");
 		// Return value of Tcl variable NAME.
-		Object getvar(std::string name = "CPP_VAR") {
-			return this->tk->getvar(name);
+		Object getvar(std::string name = "CPP_VAR");
+
+	};
+
+	struct Tk : Misc {
+
+		template <class ... Us>
+		Tk(Misc* master, Us... args) {
+			this->tk = (TkApp*)master;
+			//this->tk = master->tk;
+			this->_w.push_back(".");// = this->tk->newid();
+			std::vector<Object> v;
+			v = { "toplevel", std::string(this->_w) };
+			std::vector<Object> argv = TKI_ARGS(args);
+			for (const auto& i : argv) v.push_back(i);
+			this->tk->call(v);
+			_default_root = this;
 		}
 
+	};
 
+	class Toplevel : Misc {
+	public:
+		template <class ... Us>
+		Toplevel(Misc* tk, Us... args) {
+			this->tk = tk->tk;
+			this->_w.push_back(".x");// = this->tk->newid();
+			std::vector<Object> v;
+			v = { "toplevel", std::string(this->_w) };
+			std::vector<Object> argv = TKI_ARGS(args);
+			for (const auto& i : argv) v.push_back(i);
+			this->tk->call(v);
+		}
 	};
 
 }

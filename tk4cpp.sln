@@ -13,6 +13,8 @@ Global
 		ReleaseDll|x86 = ReleaseDll|x86
 		ReleaseLib|x64 = ReleaseLib|x64
 		ReleaseLib|x86 = ReleaseLib|x86
+		ReleaseTest|x64 = ReleaseTest|x64
+		ReleaseTest|x86 = ReleaseTest|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A1D332FB-4A44-4C86-84DC-3F77B7874EA7}.Debug|x64.ActiveCfg = Debug|x64
@@ -27,6 +29,10 @@ Global
 		{A1D332FB-4A44-4C86-84DC-3F77B7874EA7}.ReleaseLib|x64.Build.0 = ReleaseLib|x64
 		{A1D332FB-4A44-4C86-84DC-3F77B7874EA7}.ReleaseLib|x86.ActiveCfg = ReleaseLib|Win32
 		{A1D332FB-4A44-4C86-84DC-3F77B7874EA7}.ReleaseLib|x86.Build.0 = ReleaseLib|Win32
+		{A1D332FB-4A44-4C86-84DC-3F77B7874EA7}.ReleaseTest|x64.ActiveCfg = ReleaseTest|x64
+		{A1D332FB-4A44-4C86-84DC-3F77B7874EA7}.ReleaseTest|x64.Build.0 = ReleaseTest|x64
+		{A1D332FB-4A44-4C86-84DC-3F77B7874EA7}.ReleaseTest|x86.ActiveCfg = ReleaseTest|Win32
+		{A1D332FB-4A44-4C86-84DC-3F77B7874EA7}.ReleaseTest|x86.Build.0 = ReleaseTest|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

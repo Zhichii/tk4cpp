@@ -169,6 +169,7 @@ namespace tki {
 			else TKI_ERR("OverflowError", "wide is too long");
 		}
 		else TKI_TCL_ERR(this);
+		return {};
 	}
 	double TkApp::double_fromobj(Object object) {
 		Tcl_Obj* obj = object.object;

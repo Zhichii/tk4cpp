@@ -2,7 +2,7 @@
 
 [English](README.md) [简体中文](README.SC.md) [繁體中文](README.TC.md)
 
-Notes: I use Simplified Chinese in daily life, so the translation isn't 100% accurate.
+Notes: I use Simplified Chinese in daily life, so the translations may not be 100% accurate.
 
 # Description
 

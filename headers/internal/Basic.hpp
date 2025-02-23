@@ -1,3 +1,6 @@
+#define TKI_FLAGBUILD_TCL_ERR
+#undef _DEBUG
+
 /* Some basic definitions. */
 
 #ifndef TK4CPP_INTERNAL_BASIC

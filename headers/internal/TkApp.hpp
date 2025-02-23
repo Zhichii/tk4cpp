@@ -129,6 +129,7 @@ namespace tki {
 		std::vector<Object> splitlist(std::string str);
 
 		TkApp();
+		// Use tki::TkApp&;
 		TkApp(const TkApp&) = delete;
 
 		~TkApp();
